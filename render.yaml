@@ -1,0 +1,59 @@
+services:
+  # 1. Backend API (Node.js)
+  - type: web
+    name: agripredict-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        # User will need to provide their MongoDB Atlas URI here in Render Dashboard
+        sync: false 
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AI_SERVICE_URL
+        fromService:
+          name: agripredict-ai
+          type: web
+          property: host
+
+  # 2. AI Service (Python/FastAPI)
+  - type: web
+    name: agripredict-ai
+    env: docker
+    dockerContext: ai-service
+    dockerfilePath: ../docker/Dockerfile.ai
+    plan: free # Change if needed
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: DID_API_KEY
+        sync: false
+      - key: ELEVENLABS_API_KEY
+        sync: false
+
+  # 3. Frontend (Next.js)
+  - type: web
+    name: agripredict-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: agripredict-backend
+          type: web
+          property: host
+        # Prepend https:// and append /api
+        # Note: Render provides the host, so we might need a manual override in the dashboard
+        # but this is a good starting point.

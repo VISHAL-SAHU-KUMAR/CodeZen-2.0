@@ -1,0 +1,21 @@
+// This file is deprecated in favor of src/pages/marketplace/index.jsx
+// Keeping it to avoid deletion errors, but disabling it as a page route.
+
+/*
+import React from 'react';
+
+const Marketplace = () => {
+  return (
+    <div className="p-4">
+      <h2 className="text-xl font-bold">Marketplace</h2>
+      <p>Component content placeholder</p>
+    </div>
+  );
+};
+
+export default Marketplace;
+*/
+
+export default function DeprecatedMarketplace() {
+    return null;
+}
